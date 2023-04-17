@@ -4,14 +4,13 @@ library(glue)
 library(zen4R)
 
 # Instance of Zenodo manager
-zenodo <- ZenodoManager$new()
+# zenodo <- ZenodoManager$new()
 
 # Get all communities on Zenodo
-#communities <- zenodo$getCommunities()
+# communities <- zenodo$getCommunities()
 
 # write.csv(communities, "all_communities.csv")
 
-# Uncomment lines above after finished coding and delete line below
 communities <- read.csv("all_communities.csv")
 
 # Return logical array with entry TRUE if any keyword present
@@ -25,8 +24,9 @@ keyword_detect <- function(column, keywords) {
 
 # Filter communities based on keywords
 first_keywords <- c("social", "psych", "socio")
-soc_communities <- communities %>% filter(keyword_detect(title, first_keywords) | keyword_detect(description, first_keywords))
+filtered_communities <- communities %>% filter(keyword_detect(title, first_keywords) | keyword_detect(description, first_keywords))
 
 # Secondary filter 
-second_keywords <- c("computational")
-css_communities <- soc_communities %>% filter(keyword_detect(title, second_keywords) | keyword_detect(description, second_keywords))
+second_keywords <- c("sociology", "psychology")
+filtered_communities <- filtered_communities %>% filter(keyword_detect(title, second_keywords) | keyword_detect(description, second_keywords))
+
