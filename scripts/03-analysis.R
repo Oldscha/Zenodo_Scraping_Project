@@ -14,13 +14,21 @@ publications_df <- read.csv("publications.csv")
 
 zenodo_corpus <- Corpus(VectorSource(publications_df$description))
 
+removeTerms <- function(text) {
+  text = gsub(pattern = '\\bplusmn\\b|\\bpthe\\b|\\bpthis\\b', '', text)
+  return(text)
+}
+
+
 # built a function to remove HTML tags from a text 
 
 removeHTML <- function(text){
   text = gsub(pattern = '<. +\\">', '', text)
   text = gsub(pattern = '</ .+>', '', text)
-  return(text)
+  text = removeTerms(text)
+   return(text)
 }
+
 
 # use tm package:
 # to to remove any HTML tags
@@ -28,7 +36,7 @@ removeHTML <- function(text){
 # to remove any punctuation marks from the text
 # to remove any leading or trailing whitespaces from the text
 # to convert all text to lowercase
-# to remove common English and German stopwords
+# to remove common English stopwords
 # to remove additional stopwords
 
 zenodo_corpus <- zenodo_corpus %>% 
@@ -38,7 +46,6 @@ zenodo_corpus <- zenodo_corpus %>%
   tm_map(stripWhitespace) %>%
   tm_map(content_transformer(tolower)) %>%
   tm_map(removeWords, stopwords("english")) %>%
-  tm_map(removeWords, stopwords("german")) %>%
   tm_map(removeWords, stopwords("SMART"))
 
 
@@ -60,24 +67,9 @@ df$word_freq <- paste(df$word, df$freq, sep = ": \n")
 # remove rows with strings lower as two characters
 
 df <- df %>% 
-  filter(nchar(as.character(word)) >4,
+  filter(nchar(as.character(word)) >2,
          word !="don'")
 
-
-# select colors from guardian and amazon logos
-
-zenodo.colors <- c("#8c94bc", "#7ac9f4", "#ebf3f5")
-zenodo.background <- "#0a62bc" 
-  
-# design the word cloud
-
-wordcloud2(df,
-           color = rep_len(zenodo.colors, nrow(df)),
-           backgroundColor = zenodo.background,
-           fontFamily = "DM Sans",
-           size = 0.95,
-           minSize = 5,
-           rotateRatio = 0)
 
 # create data frame with top 30 words
 
@@ -98,5 +90,29 @@ ggplot(data=df_top30, aes(x=word_freq, y=freq, fill=word_freq))+
   theme_minimal()+
   theme(legend.position = "none")+
   labs(x = NULL, y = NULL)
+
+
+# select colors from Zenodo logo
+
+zenodo.colors <- c("#8c94bc", "#7ac9f4", "#ebf3f5")
+zenodo.background <- "#0a62bc" 
+  
+# subset the dataframe
+
+df_subset <- df %>%
+  slice(30:n())
+
+# design the word cloud
+
+
+wordcloud2(df_subset,
+           color = rep_len(zenodo.colors, nrow(df)),
+           backgroundColor = zenodo.background,
+           fontFamily = "DM Sans",
+           size = 1,
+           minSize = 5,
+           rotateRatio = 0)
+
+
 
 

@@ -1,0 +1,113 @@
+---
+title: "Data Mining Capstone Project Report"
+author: "Olga Shpakova"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Introduction  
+
+This project report was written as part of the introductory course in data mining at the University of Lucerne. Its focus is on data collection, rather than data analysis or answering a specific research question.  
+
+## Zenodo Scraping Project
+
+This project is concerned with exploration and visualization of social science communities and metadata of their publications on Zenodo using R. Zenodo is an online storage service that can be used primarily for scientific datasets, but also for science-related software, publications, reports, presentations, videos, etc. The service is funded by the European Commission. Zenodo integrates the GitHub repository service to make source code stored there citable. Zenodo's own source code is also available on GitHub. Publications are given a citable DOI. There is ORCID integration, user statistics, and various licensing options. The website is maintained by the OpenAIRE consortium and CERN. Zenodo was launched in 2013. As of March 2023, it contained over three million documents and more than one petabyte of data.Zenodo provides the platform **11414** communities created and curated by Zenodo users (Status 04/24/2023). This fact makes the exploration of Zenodo with computational automated methods - here specifically with R - interesting. For more information regarding Zenodo see <https://zenodo.org/>.
+
+The University of Lucerne also uses Zenodo and is committed to ensuring that its researchers publish their scientific publications in open access whenever possible. One of the reasons for this is to make the research results generated here available to other researchers and the public without restriction, in line with the principle of "knowledge for all". With the channel in the campus-wide "Lucerne Open Repository" (LORY), the university offers a platform on which university members can publish their publications permanently and securely (as the Luzerner Zeitung writes: [link](<https://www.luzerner-rundschau.ch/stadt/detail/article/open-access-preis-00191283/>)). 
+
+
+## Data Collection
+
+To retrieve the data from Zenodo, the API of Zenodo was used and the following strategy was applied (Munzert et al. 2015, pp 221-222):   
+
+1. Information identification (see intro)
+2. Choice of strategy
+3. Data retrieval
+4. Information extraction
+5. Data preparation
+6. Data validation
+7. Debugging and maintenance
+8. Generalization   
+
+### Communities Scraping   
+
+To retrieve data from the Zenodo repository, several R packages were used, including "httr", "tidyverse", "glue", and "zen4R". The strategy included the building of the REST API endpoint. So the first step involved creating an instance of the Zenodo manager to interact with the Zenodo API and perform desired actions. The second step utilized the "getCommunities()" method of the Zenodo manager to retrieve a list of all the communities on the Zenodo repository. This resulted in 10000 communities described by several variables, including ID, title, and URL. The third step exported the collected data to a CSV file for record-keeping and reproducibility purposes. The fourth step involved loading the previously exported data back into the R environment and assigning it to a new variable. The fifth step defined a function called "keyword_detect" to search for specific keywords within a dataset, which returned a logical array with "TRUE" values for rows that contain any of the keywords. This step allowed for a flexible and customizable way to filter and subset the dataset based on specific keyword criteria.  
+ 
+In the first filtering step, a list of communities was created to only include those that contain at least one of the specified keywords in their title or description, resulting in 746 communities related to social sciences. In the second filtering step, a secondary filter was applied to narrow the selection to only include communities related to the specific fields of sociology and psychology, resulting in 77 communities. This ensured that the final analysis focused on the most relevant communities for the research question at hand. A look at the dataset, however, showed that many medical communities were among them despite the filtering.  
+
+Technical challenges included ...
+
+```{r}
+
+```
+
+
+
+### Publications Scraping    
+
+The second part of the data collection process involved requesting publication data from the Zenodo API for selected communities. The code sets two variables, "status" and "size", which control the API query parameters. "status" is set to "published", indicating that the query should only return published records, while "size" is set to "1000", indicating that up to 1000 records per request should be returned.  
+ 
+An empty dataframe is created in this step, which will be used to store the metadata for publications meeting the specified criteria (title, authors, date, description, keywords, and community) with predefined columns. This enables the code to fill the dataframe with retrieved data in a structured way.   
+
+A loop is used to iterate over the IDs of the communities filtered in the previous step. For each community, the code constructs an endpoint URL for the Zenodo API using the "glue" function. The URL includes the specified parameters "status" and "size" as well as the current community ID. The code then sends a GET request to the API using the "GET" function and extracts the parsed data from the response using the "content" function. The resulting "Records" object is a list of metadata from the Zenodo API, including titles, journals, dates, descriptions, keywords, and other relevant information. The authors and authorships that were initially included in the dataset were later removed.   
+
+Technical challenges of this step included ...
+
+```{r}
+
+```
+
+
+## Data Analysis and Results   
+
+
+For analysis of data several libraries were used, including "tidyverse", "wordcloud2", "tm", "readr", "dplyr", "viridis" and "extrafont". The analysis was directed to the Word clouds generated from the descriptions of texts to determine which words appear most frequently and to elicited the most popular topics among the communities. For this purpose corpus object was created from the "description" column of the "publications_df" data frame using the "VectorSource" and "Corpus" functions from the "tm" package.Because the description column contained text in html format, it was cleaned up using regular expressions and "tm" package.  
+
+In this cleaning step, a Term Document Matrix (TDM) object war created from the Zenodo corpus containing the word frequencies for each term in the corpus. The resulting TDM was then converted into a matrix, and a vector of the total frequency of each word was created and data frame with two columns: one column contains the unique words from the Zenodo corpus, and the other contains the corresponding frequency of each word. Rows containing strings with less than two characters or "don'" were then manually removed.   
+
+In this code block, a radar plot and word cloud were created based on the 30 most common words in Zenodo article descriptions. The 30 most frequent words are first selected from the data frame and used to create the radar plot. The radar plot shows the frequency of each word using bars arranged in a circle. The word cloud is also created from a subset of the data frame, excluding the top 30 words seen on the radar plot to see what is behind the words most frequently used for formal writing of descriptions (study (6677), research (2325), data (2278), results (1994), analysis (1693), etc). The word cloud displays the remaining words in a visually appealing way, with the size of each word representing its frequency. Colors of Zenodo logo are used for word cloud and D version of viridis package is used for radar chart.   
+
+```{r}
+library(png)
+img <- readPNG("Zenodo_word_frequency_Rplot.png")
+grid::grid.raster(img)
+```
+
+
+The words following the 30 most common words in Zenodo article descriptions more specifically describe the subjects of the studies. The word social is used in this context 1017 times, effect (952), covid (936) and age (935). The remaining words are of technical and process nature: management (995), total (935), factor (861), work (847), process (825), state (818) and test (789). From this it could be concluded, among other things, that covid subject matter dominated the studies. Further analysis is needed to confirm this assumption. For example, bigram or trigram analyses provide deeper insights into the linguistic analyses.  
+
+```{r}
+library(png)
+img <- readPNG("Zenodo_word_cloud_Rplot.png")
+grid::grid.raster(img)
+```
+
+
+## Conclusion   
+
+
+
+## References  
+
+Munzert et al. (2015): Automated Data Collection with R. Wiley.
+
+Unkel Julian (2020): Computational Methods in der politischen Kommunikationsforschung. Methodische Vertiefung: Computational Methods mit R und RStudio. URL: https://bookdown.org/joone/ComputationalMethods/
+
+
+
+
+```{r cars}
+summary(cars)
+```
+
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
