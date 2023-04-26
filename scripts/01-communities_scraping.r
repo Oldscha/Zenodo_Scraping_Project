@@ -1,32 +1,34 @@
-library(httr)
-library(tidyverse)
-library(glue)
-library(zen4R)
+library("tidyverse")
+library("zen4R")
 
-# Instance of Zenodo manager
-# zenodo <- ZenodoManager$new()
+# Create Zenodo manager
+
+zenodo <- ZenodoManager$new()
 
 # Get all communities on Zenodo
-# communities <- zenodo$getCommunities()
 
-# write.csv(communities, "all_communities.csv")
+communities <- zenodo$getCommunities()
 
-communities <- read.csv("all_communities.csv")
+# Return logical vector with entry TRUE if any keyword found
 
-# Return logical array with entry TRUE if any keyword present
 keyword_detect <- function(column, keywords) {
     include <- rep(FALSE, length(column))
     for (keyword in keywords) {
+      
+       # Set entry in vector to TRUE when one keyword is found
+      
        include <- include | str_detect(column, fixed(keyword, ignore_case=TRUE))
     }
     return(include)
 }
 
 # Filter communities based on keywords
+
 first_keywords <- c("social", "psych", "socio")
 filtered_communities <- communities %>% filter(keyword_detect(title, first_keywords) | keyword_detect(description, first_keywords))
 
-# Secondary filter 
+# Secondary filter
+
 second_keywords <- c("sociology", "psychology")
 filtered_communities <- filtered_communities %>% filter(keyword_detect(title, second_keywords) | keyword_detect(description, second_keywords))
 
