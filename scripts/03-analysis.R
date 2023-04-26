@@ -1,14 +1,8 @@
 library("tidyverse")
 library("wordcloud2")
 library("tm")
-library("readr")
-library("dplyr")
 library("viridis")
 library("extrafont")
-
-# Remove at the end
-
-publications_df <- read.csv("publications.csv")
 
 # create a corpus object 
 
@@ -69,7 +63,6 @@ df$word_freq <- paste(df$word, df$freq, sep = ": \n")
 df <- df %>% 
   filter(nchar(as.character(word)) >2,
          word !="don'")
-
 
 # create data frame with top 30 words
 

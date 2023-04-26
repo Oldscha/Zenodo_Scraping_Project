@@ -39,6 +39,4 @@ vignettes/*.pdf
 .Renviron
 
 # Data
-all_communities.csv
-all_keywords_communities.png
 publications.csv

@@ -34,11 +34,11 @@ To retrieve the data from Zenodo, the API of Zenodo was used and the following s
 
 ### Communities Scraping   
 
-To retrieve data from the Zenodo repository, several R packages were used, including "httr", "tidyverse", and "zen4R". The strategy included the building of the REST API endpoint. So the first step involved creating an instance of the Zenodo manager to interact with the Zenodo API and perform desired actions. In order to search for publications relevant to and belonging to the social science field from the large number of publications, the keyword search was considered. But because keywords are not entered reliably by Zenodo users and Zenodo did not offer its own function to search for communities, "zen4R" package was used.
+To retrieve data from the Zenodo repository, several R packages are used, including "httr", "tidyverse", and "zen4R". The strategy included the building of the REST API endpoint. So the first step involve creating an instance of the Zenodo manager to interact with the Zenodo API and perform desired actions. In order to search for publications relevant to and belonging to the social science field from the large number of publications, the keyword search is considered. But because keywords are not entered reliably by Zenodo users and Zenodo did not offer its own function to search for communities, "zen4R" package is used.
 
-The second step utilized the "getCommunities()" method of the Zenodo manager to retrieve a list of all the communities on the Zenodo repository. This resulted in 10000 communities described by several variables, including ID, title, and description. The final step was to filter the communities based on selected keywords to only include communities related to social science. To achieve this, a custom function called "keyword_detect" was implemented to search for specific keywords within a dataset, which returned a logical vector with "TRUE" values for rows that contain any of the keywords. This step allowed for a flexible and customizable way to filter and subset the dataset based on specific keyword criteria.
+The second step utilize the "getCommunities()" method of the Zenodo manager to retrieve a list of all the communities on the Zenodo repository. This results in 10000 communities described by several variables, including ID, title, and description. The final step is to filter the communities based on selected keywords to only include communities related to social science. To achieve this, a custom function called "keyword_detect" is implemented to search for specific keywords within a dataset, which returned a logical vector with "TRUE" values for rows that contain any of the keywords. This step allows for a flexible and customizable way to filter and subset the dataset based on specific keyword criteria.
 
-In the first filtering step, a list of communities was created to only include those that contain at least one of the strings "social", "psych" or "socio" in their title or description, resulting in 734 communities. In the second filtering step, a secondary filter was applied to narrow the selection to only include communities related to the specific fields of sociology and psychology, resulting in 78 communities. This ensured that the final analysis focused on the most relevant communities for the research interest at hand. A look at the dataset, however, showed that many medical communities were among the final communities despite the filtering.There was thus the difficulty of finding only relevant communities. The filtering can certainly be improved.
+In the first filtering step, a list of communities is created to only include those that contain at least one of the strings "social", "psych" or "socio" in their title or description, resulting in 734 communities. In the second filtering step, a secondary filter is applied to narrow the selection to only include communities related to the specific fields of sociology and psychology, resulting in 78 communities. This ensure that the final analysis focuses on the most relevant communities for the research interest at hand. A look at the dataset, however, showed that many medical communities were among the final communities despite the filtering.There was thus the difficulty of finding only relevant communities. The filtering can certainly be improved.
 
 ### Publications Scraping
 
@@ -60,32 +60,29 @@ In this cleaning step, a Term Document Matrix (TDM) object war created from the 
 
 In this code block, a radar plot and word cloud were created based on the 30 most common words in Zenodo article descriptions. The 30 most frequent words are first selected from the data frame and used to create the radar plot. The radar plot shows the frequency of each word using bars arranged in a circle. The word cloud is also created from a subset of the data frame, excluding the top 30 words seen on the radar plot to see what is behind the words most frequently used for formal writing of descriptions (study (6677), research (2325), data (2278), results (1994), analysis (1693), etc). The word cloud displays the remaining words in a visually appealing way, with the size of each word representing its frequency. Colors of Zenodo logo are used for word cloud and D version of viridis package is used for radar chart.   
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap = "Figure 1: Word Frequency"}
 library(png)
-img <- readPNG("Zenodo_word_frequency_Rplot.png")
+img <- readPNG("output/Zenodo_word_frequency_Rplot.png")
 grid::grid.raster(img)
 ```
-
 
 The words following the 30 most common words in Zenodo article descriptions more specifically describe the subjects of the studies. The word social is used in this context 1017 times, effect (952), covid (936) and age (935). The remaining words are of technical and process nature: management (995), total (935), factor (861), work (847), process (825), state (818) and test (789). From this it could be concluded, among other things, that covid subject matter dominated the studies. Further analysis is needed to confirm this assumption. For example, bigram or trigram analyses provide deeper insights into the linguistic analyses.  
 
-```{r, echo=FALSE}
-img <- readPNG("Zenodo_word_cloud_Rplot.png")
+```{r, echo=FALSE, fig.cap = "Figure 2: Word Cloud"}
+img <- readPNG("output/Zenodo_word_cloud_Rplot.png")
 grid::grid.raster(img)
 ```
 
 
-## Conclusion   
+## Conclusion
 
-
+As an open-source repository, Zenodo contains many publications that are not regularly managed and organized. This fact makes scraping and analyzing Zenodo publications cumbersome. The aim of this project was to extract the publications from the field of social sciences for further possible analysis. It needs further manipulation and manual inspection from the dataset to get good starting point for analysis.
 
 ## References  
 
-Munzert et al. (2015): Automated Data Collection with R. Wiley.
+Munzert et al. (2015): Automated Data Collection with R. URL: [link](http://repo.darmajaya.ac.id/3825/1/Automated%20Data%20Collection%20with%20R_%20A%20Practical%20Guide%20to%20Web%20Scraping%20and%20Text%20Mining%20%28%20PDFDrive%20%29.pdf) (last access: 26.04.2023)
 
-Tidyverse Glue URL: https://glue.tidyverse.org/reference/glue.html
+Unkel, Julian (2020): Computational Methods in der politischen Kommunikationsforschung. Methodische Vertiefung: Computational Methods mit R und RStudio. URL: [link](https://bookdown.org/joone/ComputationalMethods/) (last access: 26.04.2023)
 
-Unkel Julian (2020): Computational Methods in der politischen Kommunikationsforschung. Methodische Vertiefung: Computational Methods mit R und RStudio. URL: https://bookdown.org/joone/ComputationalMethods/  
-
-Zenodo (): Zenodo Developers. URL: https://developers.zenodo.org/
+Zenodo (n. d.): Zenodo Developers. URL: [link](https://developers.zenodo.org/) (last access: 26.04.2023)
 
