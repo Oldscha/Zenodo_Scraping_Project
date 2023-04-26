@@ -15,7 +15,7 @@ keyword_detect <- function(column, keywords) {
     include <- rep(FALSE, length(column))
     for (keyword in keywords) {
       
-       # Set entry in vector to TRUE as soon as at least one keyword is found
+       # Set entry in vector to TRUE when one keyword is found
       
        include <- include | str_detect(column, fixed(keyword, ignore_case=TRUE))
     }
